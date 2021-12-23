@@ -64,6 +64,15 @@ def drawScreen(window):
     resetText = myfont.render("R to Reset", True, BLACK)
     window.screen.blit(resetText, (window.width - window.hozPadding//2 - resetText.get_width()*2, window.verPadding//2))
 
+    slowText = myfont.render("H for Slow", True, BLACK)
+    window.screen.blit(slowText, (window.hozPadding//2 + slowText.get_width() * 1.5, window.verPadding//4))
+
+    mediumText = myfont.render("J for Medium", True, BLACK)
+    window.screen.blit(mediumText, (window.hozPadding//2 + mediumText.get_width() * 2.5, window.verPadding//4))
+
+    fastText = myfont.render("K for Fast", True, BLACK)
+    window.screen.blit(fastText, (window.hozPadding//2 + fastText.get_width() * 5.5, window.verPadding//4))
+
     # quitText = myfont.render("Q to quit", True, BLACK)
     # window.screen.blit(quitText, (window.width - window.hozPadding//2 - quitText.get_width()*2, window.verPadding//2))
 
@@ -95,7 +104,7 @@ def drawRects(window, swapColors, clear):
         pygame.display.update()
 
 # partition for quick sort 
-def partition(window, left, right):
+def partition(window, left, right, speed):
 
     middle = (left + right) // 2
 
@@ -110,21 +119,21 @@ def partition(window, left, right):
                 pivotIndex += 1
                 window.myList[scan], window.myList[pivotIndex] = window.myList[pivotIndex], window.myList[scan]
                 drawRects(window, {scan:RED, pivotIndex:GREEN}, True)
-                sleep(0.015)
+                sleep(speed)
 
     window.myList[left], window.myList[pivotIndex] = window.myList[pivotIndex], window.myList[left]
 
     return pivotIndex
 
 # quick sort divide and conquer
-def quickSort(window, left, right):
+def quickSort(window, left, right, speed):
     if left < right:
-        pivotPoint = partition(window, left, right)
-        quickSort(window, left, pivotPoint-1)
-        quickSort(window, pivotPoint+1, right)
+        pivotPoint = partition(window, left, right, speed)
+        quickSort(window, left, pivotPoint-1, speed)
+        quickSort(window, pivotPoint+1, right, speed)
 
 
-def bubbleSort(window):
+def bubbleSort(window, speed):
 
     length = len(window.myList)
 
@@ -133,7 +142,8 @@ def bubbleSort(window):
             if window.myList[j] > window.myList[j+1]:
                 window.myList[j], window.myList[j+1] = window.myList[j+1], window.myList[j]
                 drawRects(window, {j:RED, j+1:GREEN}, True)
-                sleep(0.005)
+                sleep(speed)
+
 
 
 def mainLoop():
@@ -145,6 +155,8 @@ def mainLoop():
 
     width = 800
     height = 600
+
+    
 
     clock = pygame.time.Clock()
 
@@ -158,6 +170,7 @@ def mainLoop():
     hasStarted = False
     # check if user has chosen the sort
     algo = ""
+    speed = 0.015
 
     while running:
         clock.tick(60)
@@ -165,13 +178,15 @@ def mainLoop():
         drawScreen(window)
         
         if start == True:
+            
             hasStarted = True
             start = False
+
             if algo == "quicksort":
-                quickSort(window, 0, nrElements)
+                quickSort(window, 0, nrElements, speed)
                 algo = ""
             elif algo == "bubblesort":
-                bubbleSort(window)
+                bubbleSort(window, speed/2)
                 algo = ""
 
         for event in pygame.event.get():
@@ -194,12 +209,19 @@ def mainLoop():
                 if event.key == pygame.K_b:
                     algo = "bubblesort"
 
+                if event.key == pygame.K_h:
+                    speed = 0.03
+
+                if event.key == pygame.K_j:
+                    speed = 0.015
+
+                if event.key == pygame.K_k:
+                    speed = 0.008
+
                 # reset if r is pressed
                 if event.key == pygame.K_r:
                     mainLoop()
                     running = False
-
-                
 
 
 
